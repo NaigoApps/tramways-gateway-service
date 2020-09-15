@@ -1,0 +1,26 @@
+server:
+  port: 8762
+spring:
+  application:
+    name: gateway-service
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+zuul:
+  routes:
+    users:
+      path: /tramways/rest/users/**
+      sensitive-headers: ''
+      serviceId: users-service
+      prefix: /tramways/rest/users/
+      strip-prefix: false
+    tramways:
+      path: /tramways/**
+      sensitive-headers: ''
+      url: http://localhost:8080/tramways
+debug: true

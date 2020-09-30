@@ -23,4 +23,3 @@ zuul:
       path: /tramways/**
       sensitive-headers: ''
       url: http://localhost:8080/tramways
-debug: true

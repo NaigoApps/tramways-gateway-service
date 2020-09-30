@@ -1,46 +1,36 @@
 package it.tramways.gateway;
 
-import com.netflix.discovery.converters.Auto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import it.tramways.security.JWTRequestFilter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private TramwaysUserDetailService userDetailService;
+    private final JWTRequestFilter filter;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailService);
+    public WebSecurityConfig(
+        JWTRequestFilter filter
+    ) {
+        this.filter = filter;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .httpBasic().disable()
+            .cors().and()
+            .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/tramways/rest/users/login").permitAll()
-                .anyRequest().authenticated();
-    }
-
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        UserDetails user =
-            User.withUsername("User")
-                .password("password")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
+            .antMatchers(HttpMethod.POST, "/tramways/rest/users/login").permitAll()
+            .anyRequest().authenticated()
+            .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
 }

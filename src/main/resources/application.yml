@@ -19,6 +19,12 @@ zuul:
       serviceId: users-service
       prefix: /tramways/rest/users/
       strip-prefix: false
+    analysis:
+      path: /tramways/rest/analysis/**
+      sensitive-headers: ''
+      serviceId: analysis-service
+      prefix: /tramways/rest/analysis/
+      strip-prefix: false
     tramways:
       path: /tramways/**
       sensitive-headers: ''

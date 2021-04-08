@@ -11,13 +11,25 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+ribbon:
+  ConnectTimeout: 5000
+  ReadTimeout: 10000
 zuul:
+  host:
+    connect-timeout-millis: 5000
+    socket-timeout-millis: 10000
   routes:
     users:
       path: /tramways/rest/users/**
       sensitive-headers: ''
       serviceId: users-service
       prefix: /tramways/rest/users/
+      strip-prefix: false
+    projects:
+      path: /tramways/rest/projects/**
+      sensitive-headers: ''
+      serviceId: projects-service
+      prefix: /tramways/rest/projects/
       strip-prefix: false
     analysis:
       path: /tramways/rest/analysis/**
@@ -29,3 +41,10 @@ zuul:
       path: /tramways/**
       sensitive-headers: ''
       url: http://localhost:8080/tramways
+  include-debug-header: true
+  debug:
+    request:
+      true
+  debugFilters:
+    disabled:
+      false
